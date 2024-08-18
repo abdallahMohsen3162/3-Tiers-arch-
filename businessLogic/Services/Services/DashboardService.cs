@@ -35,7 +35,6 @@ namespace businessLogic.Services.Services
 
 
 
-
             var allUsers = _userManager.Users.ToArray();
             var profileViewModels = new List<ProfileViewModel>();
 

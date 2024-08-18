@@ -17,10 +17,9 @@ namespace Interface.Controllers
             this.roleService = roleService;
         }
 
-        //[Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher")]
         public IActionResult Index()
         {
-  
 
             var model = _dashboardService.GetDashboardData();
             return View(model);
