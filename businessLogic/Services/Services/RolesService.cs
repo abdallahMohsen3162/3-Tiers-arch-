@@ -61,5 +61,11 @@ namespace businessLogic.Services.Services
             role.Name = newRoleName;
             return await _roleManager.UpdateAsync(role);
         }
+
+        public async Task<IdentityResult> DeleteRoleAsync(string roleId)
+        {
+            var role = await _roleManager.FindByIdAsync(roleId);
+            return await _roleManager.DeleteAsync(role);
+        }
     }
 }

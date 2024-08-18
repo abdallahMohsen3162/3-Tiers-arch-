@@ -16,6 +16,7 @@ namespace businessLogic.Services.Interfaces
         Task<IdentityRole> GetRoleByIdAsync(string roleId);
         Task<IdentityRole> GetRoleByNameAsync(string roleName);
         Task<IdentityResult> UpdateRoleAsync(string roleId, string newRoleName);
+        Task<IdentityResult> DeleteRoleAsync(string roleId);
 
     }
 }

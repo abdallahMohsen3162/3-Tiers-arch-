@@ -21,3 +21,13 @@ body {
   margin-bottom: 60px;
 }
 
+
+.popup{
+    padding:10px;
+    background-color:#ddd;
+    position:absolute;
+    width:300px;
+    top:10%;
+    left:50%;
+    transform:translateX(-50%);
+}

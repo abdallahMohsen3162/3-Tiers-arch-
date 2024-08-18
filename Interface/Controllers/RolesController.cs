@@ -91,5 +91,15 @@ namespace Interface.Controllers
 
             return View(model);
         }
+        [HttpPost]
+        [ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var result = await _roleManager.DeleteRoleAsync(id);
+            ViewBag.RoleList = _roleManager.getRoles();
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }
