@@ -18,7 +18,7 @@ namespace DataLayer.Data
         public static async Task SeedAsync(UserManager<ApplicationUser> userManager )
         {
             string adminPassword = "aa123456AA#";
-            string AdminEmail = "abdallah3162gmail.com";
+            string AdminEmail = "abdallah3162@gmail.com";
             var adminUser = await userManager.FindByEmailAsync(AdminEmail);
             if (adminUser == null)
             {

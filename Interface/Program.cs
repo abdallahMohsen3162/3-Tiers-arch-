@@ -51,14 +51,10 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 var app = builder.Build();
 
+await DataLayer.Data.AutoGenerateUser.SeedAsync(app.Services);
 
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-    await ApplicationDbContext.SeedAsync(userManager);
-}
+
 
 if (!app.Environment.IsDevelopment())
 {
