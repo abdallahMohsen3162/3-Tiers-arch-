@@ -1,6 +1,7 @@
 ﻿using businessLogic.ModelViews;
 using businessLogic.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Interface.Controllers
@@ -8,14 +9,19 @@ namespace Interface.Controllers
     public class DashboardController : Controller
     {
         private readonly IDashboardService _dashboardService;
+        private readonly IRolesService roleService;
 
-        public DashboardController(IDashboardService dashboardService)
+        public DashboardController(IDashboardService dashboardService, IRolesService roleService)
         {
             _dashboardService = dashboardService;
+            this.roleService = roleService;
         }
-        [Authorize]
+
+        //[Authorize(Roles = "Teacher")]
         public IActionResult Index()
         {
+  
+
             var model = _dashboardService.GetDashboardData();
             return View(model);
         }
@@ -51,7 +57,6 @@ namespace Interface.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize]
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -65,7 +70,8 @@ namespace Interface.Controllers
                 return NotFound();
             }
 
-            var model = _dashboardService.GetEditViewModel(user);
+            var model = await _dashboardService.GetEditViewModelAsync(user);
+            ViewBag.RoleList = roleService.getRoles();
             return View(model);
         }
 
@@ -95,25 +101,38 @@ namespace Interface.Controllers
                 var updateResult = await _dashboardService.UpdateUserAsync(user, model.NewPassword);
                 if (updateResult.Succeeded)
                 {
-                    return RedirectToAction(nameof(Index));
+                    var roleUpdateResult = await _dashboardService.UpdateUserRoleAsync(user, model.RoleId);
+                    if (roleUpdateResult.Succeeded)
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
+                        foreach (var error in roleUpdateResult.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                    }
                 }
-
-                foreach (var error in updateResult.Errors)
+                else
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    foreach (var error in updateResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
                 }
             }
 
-            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-            {
-                ModelState.AddModelError(string.Empty, error.ErrorMessage);
-            }
+            ViewBag.RoleList = roleService.getRoles();
             return View(model);
         }
+
 
         [Authorize]
         public IActionResult Create()
         {
+            var roles = roleService.getRoles();
+            ViewBag.RoleList = roles;
             return View();
         }
 
@@ -135,7 +154,7 @@ namespace Interface.Controllers
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
-
+            ViewBag.RoleList = roleService.getRoles();
             return View(model);
         }
     }

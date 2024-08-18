@@ -29,5 +29,9 @@
         <input asp-for="ConfirmPassword" type="password" class="form-control" />
         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
     </div>
+
+    <select asp-for="RoleId" class="form-control" asp-items="@(new SelectList(ViewBag.RoleList, "Value", "Text"))">
+    </select>
+
     <button type="submit" class="btn btn-primary">Create</button>
 </form>

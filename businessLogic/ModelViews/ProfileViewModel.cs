@@ -10,6 +10,7 @@
 
         public int ?Age { get; set; }
 
+        public string Role { get; set; }
         public bool ?OldThan18 { get; set; }
     }
 }

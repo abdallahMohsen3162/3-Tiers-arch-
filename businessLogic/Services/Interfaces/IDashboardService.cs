@@ -17,5 +17,8 @@ namespace businessLogic.Services.Interfaces
         Task<IdentityResult> DeleteUserAsync(ApplicationUser user);
         Task<IdentityResult> UpdateUserAsync(ApplicationUser user, string newPassword);
         Task<IdentityResult> CreateUserAsync(CreateUserViewModel model);
+        Task<IdentityResult> UpdateUserRoleAsync(ApplicationUser user, string roleId);
+
+        Task<EditViewModel> GetEditViewModelAsync(ApplicationUser user);
     }
 }

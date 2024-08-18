@@ -17,14 +17,21 @@ namespace businessLogic.ModelViews
         [Required]
         [EmailAddress]
         public string Email { get; set; }
-        public string ?Address { get; set; }
+
+        public string? Address { get; set; }
+
         [Required]
         public int Age { get; set; }
+
         [DataType(DataType.Password)]
         public string Password { get; set; }
+
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Required]
+        public string RoleId { get; set; } 
     }
 
     public class EditViewModel
@@ -45,5 +52,8 @@ namespace businessLogic.ModelViews
         [DataType(DataType.Password)]
         [Compare("NewPassword", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Required]
+        public string RoleId { get; set; }
     }
 }
