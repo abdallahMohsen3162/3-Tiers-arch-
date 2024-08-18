@@ -1,0 +1,31 @@
+﻿@model DataLayer.Entities.Course
+
+<h2>Create New Course</h2>
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Sort"></label>
+        <input asp-for="Sort" class="form-control" />
+        <span asp-validation-for="Sort" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="State">State</label>
+        <select asp-for="State" asp-items="@(ViewBag.CourseStates as SelectList)" class="form-control">
+            <option value="">Select State</option>
+        </select>
+        <span asp-validation-for="State" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

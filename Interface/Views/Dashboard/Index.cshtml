@@ -1,0 +1,36 @@
+﻿@model businessLogic.ModelViews.DashboardViewModel
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Age</th>
+            <th>Actions</th>
+            <td>>18</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>@user.Address</td>
+                <td>@user.Age</td>
+                
+                <td>
+                    <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-primary">Edit</a>
+                    <form method="post" action="@Url.Action("DeleteConfirmed", new { id = user.Id })" style="display:inline;">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" onclick="return confirm('Are you sure?')" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+                <td>
+                    @user.OldThan18
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create" asp-controller="Dashboard">Add</a>

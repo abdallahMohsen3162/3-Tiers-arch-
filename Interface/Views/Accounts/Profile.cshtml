@@ -1,0 +1,64 @@
+﻿@model businessLogic.ModelViews.ProfileViewModel
+
+<div class="card mt-5">
+    <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">User Profile</h3>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-sm-3">
+                <strong>Username:</strong>
+            </div>
+            <div class="col-sm-9">
+                @Model.UserName
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-sm-3">
+                <strong>Email:</strong>
+            </div>
+            <div class="col-sm-9">
+                @Model.Email
+            </div>
+        </div>       
+        
+        <div class="row mb-3">
+            <div class="col-sm-3">
+                <strong>Address:</strong>
+            </div>
+            <div class="col-sm-9">
+                @* if not address *@
+                @if(Model.Address == null)
+                {
+                    <strong>No provided address</strong>
+                }else{
+                    @Model.Address
+                }
+            </div>
+        </div>     
+        
+
+        
+        <div class="row mb-3">
+            <div class="col-sm-3">
+                <strong>Age:</strong>
+            </div>
+            <div class="col-sm-9">
+                @* if not address *@
+                @if (Model.Age == -1)
+                {
+                    <strong>No provided Age</strong>
+                }
+                else
+                {
+                    @Model.Age
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<a asp-action="Delete" class="btn btn-danger" asp-controller="Accounts">
+    Delete My Account
+</a>

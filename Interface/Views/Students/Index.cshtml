@@ -1,0 +1,61 @@
+﻿@model IEnumerable<DataLayer.Entities.Student>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+
+            <th>
+                Name
+            </th>
+            <th>
+                Age
+            </th>
+            <th>
+                Email
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var stude in Model) {
+        <tr>
+            <td>
+                @stude.Name
+            </td>
+            <td>
+                @stude.Age
+            </td>
+            <td>
+                @stude.Email
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@stude.Id">Edit</a> 
+                <a asp-action="Details" asp-route-id="@stude.Id">Details</a> 
+                <a asp-action="Delete" asp-route-id="@stude.Id">Delete</a>
+                <a asp-action="Courses" asp-route-id="@stude.Id">Courses</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+
+<a asp-controller="Courses" asp-action="Index">Courses</a>
+
+<div class="pagination text-center">
+    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+    {
+       <a href="@Url.Action("Index", new { page = i })" class="btn @(ViewBag.CurrentPage == i ? "btn-dark" : "btn-default")">
+            @i
+       </a>
+    }
+</div>

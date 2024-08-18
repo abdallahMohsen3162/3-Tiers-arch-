@@ -1,0 +1,69 @@
+﻿@model businessLogic.ModelViews.studentViewModel
+
+@{
+    ViewData["Title"] = "Student Courses";
+}
+
+<h2>@Model.student.Name's Courses</h2>
+
+<div>
+    <h3>Student Details</h3>
+    <p><strong>Name:</strong> @Model.student.Name</p>
+    <p><strong>Age:</strong> @Model.student.Age</p>
+    <p><strong>Email:</strong> @Model.student.Email</p>
+    <p><strong>Phone:</strong> @Model.student.Phone</p>
+    <p><strong>Address:</strong> @Model.student.Address</p>
+</div>
+
+<div>
+    <h3>Courses Taken</h3>
+    @if (Model.taken != null && Model.taken.Any())
+    {
+        <form asp-action="DeleteCourses" method="post">
+            <input type="hidden" name="studentId" value="@Model.student.Id" />
+            <h4>Select Courses to Remove:</h4>
+            <ul>
+                @foreach (var course in Model.taken)
+                {
+                    <li>
+                        <input type="checkbox" name="courseIdsToRemove" value="@course.Id" />
+                        @course.Name
+                    </li>
+                }
+            </ul>
+            <button type="submit" class="btn btn-danger">Remove Selected Courses</button>
+        </form>
+    }
+    else
+    {
+        <p>No courses taken.</p>
+    }
+</div>
+
+<div>
+    <h3>Courses Not Taken</h3>
+    @if (Model.notTaken != null && Model.notTaken.Any())
+    {
+        <form asp-action="EnrollInCourses" method="post">
+            <input type="hidden" name="studentId" value="@Model.student.Id" />
+            <h4>Select Courses to Enroll:</h4>
+            <ul>
+                @foreach (var course in Model.notTaken)
+                {
+                    <li>
+                        <input type="checkbox" name="courseIds" value="@course.Id" />
+                        @course.Name
+                    </li>
+                }
+            </ul>
+            <button type="submit" class="btn btn-primary">Enroll in Selected Courses</button>
+        </form>
+    }
+    else
+    {
+        <p>All courses are taken.</p>
+    }
+</div>
+
+<a asp-controller="Students" asp-action="Index">Students</a>
+<a asp-controller="CourseStates" asp-action="Index">CourseStates</a>

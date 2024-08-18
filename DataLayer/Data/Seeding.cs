@@ -1,14 +1,20 @@
 ﻿using DataLayer.Entities;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace businessLogic.Services
+namespace DataLayer.Data
 {
-    public interface ICourseService
+    public class AutoGenerateUser
     {
-        List<Course> GetCourses();
+        public AutoGenerateUser()
+        {
+        }
+
+        
+
     }
 }
