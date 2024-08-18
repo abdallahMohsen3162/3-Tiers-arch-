@@ -1,0 +1,20 @@
+﻿@model businessLogic.ModelViews.EditRoleViewModel
+
+@{
+    ViewData["Title"] = "Edit Role";
+}
+
+<h2>Edit Role</h2>
+
+<form asp-action="Edit" method="post">
+    <div class="form-group">
+        <input asp-for="Id" type="hidden" />
+
+        <label asp-for="RoleName" class="control-label">Role Name</label>
+        <input asp-for="RoleName" class="form-control" />
+        <span asp-validation-for="RoleName" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

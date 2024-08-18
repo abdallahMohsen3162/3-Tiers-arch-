@@ -1,0 +1,10 @@
+﻿
+<h3>Existing Roles</h3>
+@foreach (var role in ViewBag.RoleList)
+{
+    <li>
+        @role.Text
+        <a asp-action="Edit" asp-route-id="@role.Value" class="btn btn-secondary btn-sm">Edit</a>
+    </li>
+}
+<a asp-action="Create">Create New Role</a>
