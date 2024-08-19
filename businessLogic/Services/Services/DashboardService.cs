@@ -158,5 +158,13 @@ namespace businessLogic.Services.Services
                 RoleId = roleId
             };
         }
+
+        public async Task<string[]> GetUserRolesAsync(ApplicationUser user)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            return roles.ToArray();
+        }
+
+
     }
 }

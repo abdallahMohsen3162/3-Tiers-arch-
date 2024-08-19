@@ -15,7 +15,7 @@ public class CoursesController : Controller
     {
         _courseService = courseService;
     }
-    [Authorize]
+    [Authorize(Roles = "Teacher")]
     public async Task<IActionResult> Index()
     {
         var courses = await _courseService.GetAllCoursesAsync();

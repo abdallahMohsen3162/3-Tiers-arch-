@@ -16,8 +16,10 @@ namespace Interface.Controllers
             _dashboardService = dashboardService;
             this.roleService = roleService;
         }
+        //teacher or admin
 
-        [Authorize(Roles = "Teacher")]
+
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
 
@@ -34,7 +36,8 @@ namespace Interface.Controllers
             }
 
             var user = await _dashboardService.GetUserByIdAsync(id);
-            if (user == null)
+
+            if (user == null )
             {
                 return NotFound();
             }
@@ -48,7 +51,9 @@ namespace Interface.Controllers
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var user = await _dashboardService.GetUserByIdAsync(id);
-            if (user != null)
+            var role = await _dashboardService.GetUserRolesAsync(user);
+            bool isAdmin = role.Contains("Admin");
+            if (user != null || isAdmin)
             {
                 await _dashboardService.DeleteUserAsync(user);
             }
@@ -58,12 +63,14 @@ namespace Interface.Controllers
 
         public async Task<IActionResult> Edit(string id)
         {
-            if (id == null)
+            if (id == null )
             {
                 return NotFound();
             }
 
             var user = await _dashboardService.GetUserByIdAsync(id);
+
+
             if (user == null)
             {
                 return NotFound();
@@ -88,7 +95,9 @@ namespace Interface.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _dashboardService.GetUserByIdAsync(id);
-                if (user == null)
+                var role = await _dashboardService.GetUserRolesAsync(user);
+                bool isAdmin = role.Contains("Admin");
+                if (user == null || isAdmin)
                 {
                     return NotFound();
                 }

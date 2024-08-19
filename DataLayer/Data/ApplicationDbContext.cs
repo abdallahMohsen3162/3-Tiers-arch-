@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataLayer.Entities;
+using DataLayer.Migrations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -13,21 +14,27 @@ namespace DataLayer.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options){}
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-        public static async Task SeedAsync(UserManager<ApplicationUser> userManager )
+        public static async Task SeedAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             string adminPassword = "aa123456AA#";
             string AdminEmail = "abdallah3162@gmail.com";
+
             var adminUser = await userManager.FindByEmailAsync(AdminEmail);
             if (adminUser == null)
             {
                 adminUser = new ApplicationUser
                 {
                     UserName = AdminEmail,
-                    Email = AdminEmail
+                    Email = AdminEmail,
                 };
+
                 var result = await userManager.CreateAsync(adminUser, adminPassword);
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(adminUser, "Admin");
+                }
             }
         }
 
@@ -43,7 +50,6 @@ namespace DataLayer.Data
                       .HasConversion<string>()
                       .IsRequired();
             });
-
 
             modelBuilder.Entity<CourseStudent>()
                 .HasKey(cs => new { cs.CourseId, cs.StudentId });
