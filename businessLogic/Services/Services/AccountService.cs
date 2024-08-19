@@ -49,8 +49,17 @@ namespace businessLogic.Services.Services
         public async Task<IdentityResult> RegisterUser(RegisterViewModel model)
         {
             var user = _mapper.Map<ApplicationUser>(model);
-            return await _userManager.CreateAsync(user, model.Password);
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "User");
+            }
+
+            return result;
         }
+
 
         public async Task SignInUserAsync(ApplicationUser user, bool isPersistent = false)
         {

@@ -41,15 +41,15 @@ namespace businessLogic.Services.Services
             foreach (var user in allUsers)
             {
                 var profileViewModel = _mapper.Map<ProfileViewModel>(user);
-                var roles = _userManager.GetRolesAsync(user).Result; // Fetch roles for each user
+                var roles = _userManager.GetRolesAsync(user).Result;
 
                 if (roles.Any())
                 {
-                    profileViewModel.Role = string.Join(", ", roles); // Join multiple roles with commas, if necessary
+                    profileViewModel.Role = string.Join(", ", roles); 
                 }
                 else
                 {
-                    profileViewModel.Role = "No Role Assigned"; // Handle users with no roles
+                    profileViewModel.Role = "No Role Assigned"; 
                 }
 
                 profileViewModels.Add(profileViewModel);
