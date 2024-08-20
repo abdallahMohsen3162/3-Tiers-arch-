@@ -3,7 +3,8 @@ using businessLogic.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-
+using System.Security.Claims;
+using DataLayer.Entities;
 namespace Interface.Controllers
 {
     public class DashboardController : Controller
@@ -16,18 +17,16 @@ namespace Interface.Controllers
             _dashboardService = dashboardService;
             this.roleService = roleService;
         }
-        //teacher or admin
 
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = AuthenticationConstants.Identity.Manage)]
         public IActionResult Index()
         {
-
             var model = _dashboardService.GetDashboardData();
             return View(model);
         }
 
-        [Authorize]
+        [Authorize(Policy = AuthenticationConstants.Identity.Delete)]
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -45,7 +44,7 @@ namespace Interface.Controllers
             return View(user);
         }
 
-        [Authorize]
+        [Authorize(Policy = AuthenticationConstants.Identity.Delete)]
         [HttpPost, ActionName("DeleteConfirmed")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
@@ -61,6 +60,7 @@ namespace Interface.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Policy = AuthenticationConstants.Identity.Edit)]
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null )
@@ -81,7 +81,7 @@ namespace Interface.Controllers
             return View(model);
         }
 
-        [HttpPost]
+        [Authorize(Policy = AuthenticationConstants.Identity.Edit)]
         [ValidateAntiForgeryToken]
         [Authorize]
         public async Task<IActionResult> Edit(string id, EditViewModel model)
@@ -136,7 +136,7 @@ namespace Interface.Controllers
         }
 
 
-        [Authorize]
+        [Authorize(Policy = AuthenticationConstants.Identity.Create)]
         public IActionResult Create()
         {
             var roles = roleService.getRoles();
@@ -144,7 +144,7 @@ namespace Interface.Controllers
             return View();
         }
 
-        [Authorize]
+        [Authorize(Policy = AuthenticationConstants.Identity.Create)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateUserViewModel model)
@@ -165,5 +165,65 @@ namespace Interface.Controllers
             ViewBag.RoleList = roleService.getRoles();
             return View(model);
         }
+
+        public async Task<IActionResult> ManageClaims(string id)
+        {
+
+            var user = await _dashboardService.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var userClaims = await _dashboardService.GetUserClaimsAsync(id); 
+            foreach (var claim in userClaims)
+            {
+                
+                Console.WriteLine(claim.Type);
+            }
+
+            List<UserClaim> arr = new List<UserClaim>();
+            foreach (Claim claim in DataLayer.Entities.Claims.AllClaims)
+            {
+                UserClaim userClaim = new UserClaim
+                {
+                    ClaimType = claim.Type,
+                    IsSelected = userClaims.Any(c => c.Type == claim.Type)
+                };
+                arr.Add(userClaim);
+            }
+
+            var model = new UserClaimsViewModel
+            {
+                UserId = user.Id,
+                UserName = user.UserName, 
+                Claims = arr
+            };
+
+            return View(model);
+        }
+
+        [Authorize(Policy = AuthenticationConstants.Claims.Manage)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ManageClaims(UserClaimsViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var success = await _dashboardService.UpdateUserClaimsAsync(model.UserId, model.Claims);
+                if (success)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ModelState.AddModelError(string.Empty, "Error updating claims.");
+            }
+
+            // Repopulate the ViewBag or other necessary data before returning the view
+            return View(model);
+        }
+
+
+
     }
 }

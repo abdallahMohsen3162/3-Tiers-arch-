@@ -38,6 +38,32 @@ builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IRolesService, RolesService>();
 
 
+builder.Services.AddAuthorization(options =>
+{
+
+    options.AddPolicy(AuthenticationConstants.Identity.Manage, policy =>
+        policy.RequireAssertion(context =>
+            context.User.HasClaim(c => c.Type == AuthenticationConstants.Identity.Create) ||
+            context.User.HasClaim(c => c.Type == AuthenticationConstants.Identity.Delete) ||
+            context.User.HasClaim(c => c.Type == AuthenticationConstants.Identity.Edit)
+        ));
+
+
+    options.AddPolicy(AuthenticationConstants.Identity.Create, policy =>
+    policy.RequireClaim(AuthenticationConstants.Identity.Create));
+
+    options.AddPolicy(AuthenticationConstants.Identity.Edit, policy =>
+    policy.RequireClaim(AuthenticationConstants.Identity.Edit));
+
+    options.AddPolicy(AuthenticationConstants.Identity.Delete, policy =>
+    policy.RequireClaim(AuthenticationConstants.Identity.Delete));
+
+    options.AddPolicy(AuthenticationConstants.Claims.Manage, policy =>
+        policy.RequireClaim(AuthenticationConstants.Claims.Manage));
+
+
+});
+
 
 string baseUrl = "/Accounts";
 builder.Services.ConfigureApplicationCookie(options =>

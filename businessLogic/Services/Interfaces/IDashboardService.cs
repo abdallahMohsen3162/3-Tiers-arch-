@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,5 +21,7 @@ namespace businessLogic.Services.Interfaces
         Task<IdentityResult> UpdateUserRoleAsync(ApplicationUser user, string roleId);
         Task<string[]> GetUserRolesAsync(ApplicationUser user);
         Task<EditViewModel> GetEditViewModelAsync(ApplicationUser user);
+        Task<List<Claim>> GetUserClaimsAsync(string id);
+        Task<bool> UpdateUserClaimsAsync(string userId, List<UserClaim> claims);
     }
 }

@@ -87,6 +87,20 @@ namespace businessLogic.Services.Services
             };
         }
 
+        public async Task<List<Claim>> GetUserClaimsAsync(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+
+                Console.WriteLine(id);
+                Console.WriteLine("User not found");
+                return new List<Claim>();
+            }
+            return (await _userManager.GetClaimsAsync(user)).ToList();
+        }
+
+
         public async Task<IdentityResult> UpdateUserAsync(ApplicationUser user, string newPassword)
         {
             if (!string.IsNullOrEmpty(newPassword))
@@ -163,6 +177,28 @@ namespace businessLogic.Services.Services
         {
             var roles = await _userManager.GetRolesAsync(user);
             return roles.ToArray();
+        }
+
+        public async Task<bool> UpdateUserClaimsAsync(string userId, List<UserClaim> claims)
+        {
+            foreach (var claim in claims)
+            {
+                Console.WriteLine(claim.ClaimType + " " + claim.IsSelected);
+            }
+            var user = await GetUserByIdAsync(userId);
+            if (user == null) return false;
+
+            var currentClaims = await GetUserClaimsAsync(userId);
+
+            // Remove existing claims
+            var removeResult = await _userManager.RemoveClaimsAsync(user, currentClaims);
+            if (!removeResult.Succeeded) return false;
+
+
+            
+            var selectedClaims = claims.Where(c => c.IsSelected).Select(c => new Claim(c.ClaimType, c.ClaimType));
+            var addResult = await _userManager.AddClaimsAsync(user, selectedClaims);
+            return addResult.Succeeded;
         }
 
 
