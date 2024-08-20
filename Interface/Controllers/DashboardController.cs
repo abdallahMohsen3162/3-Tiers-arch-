@@ -19,14 +19,14 @@ namespace Interface.Controllers
         }
 
 
-        [Authorize(Policy = AuthenticationConstants.Identity.Manage)]
+        //[Authorize(Policy = AuthenticationConstants.Identity.Manage)]
         public IActionResult Index()
         {
             var model = _dashboardService.GetDashboardData();
             return View(model);
         }
 
-        [Authorize(Policy = AuthenticationConstants.Identity.Delete)]
+        //[Authorize(Policy = AuthenticationConstants.Identity.Delete)]
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -44,7 +44,7 @@ namespace Interface.Controllers
             return View(user);
         }
 
-        [Authorize(Policy = AuthenticationConstants.Identity.Delete)]
+        //[Authorize(Policy = AuthenticationConstants.Identity.Delete)]
         [HttpPost, ActionName("DeleteConfirmed")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
@@ -60,10 +60,9 @@ namespace Interface.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize(Policy = AuthenticationConstants.Identity.Edit)]
+        //[Authorize(Policy = AuthenticationConstants.Identity.Edit)]
         public async Task<IActionResult> Edit(string id)
         {
-            Console.WriteLine("DDDDDDDDDDDDDDDD");
             if (id == null )
             {
                 return NotFound();
@@ -82,7 +81,6 @@ namespace Interface.Controllers
             return View(model);
         }
 
-        [Authorize(Policy = AuthenticationConstants.Identity.Edit)]
         [ValidateAntiForgeryToken]
         [HttpPost, ActionName("EditConfirmed")]
         [Authorize]
@@ -107,6 +105,36 @@ namespace Interface.Controllers
                 user.Email = model.Email;
                 user.Address = model.Address;
                 user.Age = model.Age;
+
+                if (model.ProfileImage != null && model.ProfileImage.FileName.Length > 0)
+                {
+                    // Delete the old profile image if it exists
+                    if (!string.IsNullOrEmpty(user.imageUrl))
+                    {
+                        string oldImagePath = Path.Combine(Environment.CurrentDirectory, "wwwroot", user.imageUrl.TrimStart('/'));
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
+
+                    string uploadsFolder = Path.Combine(Environment.CurrentDirectory, "wwwroot", "images", "profiles");
+
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ProfileImage.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.ProfileImage.CopyToAsync(fileStream);
+                    }
+
+                    user.imageUrl = "/images/profiles/" + uniqueFileName;
+                }
 
                 var updateResult = await _dashboardService.UpdateUserAsync(user, model.NewPassword);
                 if (updateResult.Succeeded)
@@ -138,7 +166,8 @@ namespace Interface.Controllers
         }
 
 
-        [Authorize(Policy = AuthenticationConstants.Identity.Create)]
+
+        //[Authorize(Policy = AuthenticationConstants.Identity.Create)]
         public IActionResult Create()
         {
             var roles = roleService.getRoles();
@@ -146,7 +175,7 @@ namespace Interface.Controllers
             return View();
         }
 
-        [Authorize(Policy = AuthenticationConstants.Identity.Create)]
+        //[Authorize(Policy = AuthenticationConstants.Identity.Create)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateUserViewModel model)
@@ -205,7 +234,7 @@ namespace Interface.Controllers
             return View(model);
         }
 
-        [Authorize(Policy = AuthenticationConstants.Claims.Manage)]
+        //[Authorize(Policy = AuthenticationConstants.Claims.Manage)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ManageClaims(UserClaimsViewModel model)

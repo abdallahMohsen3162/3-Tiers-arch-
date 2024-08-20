@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using DataLayer.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace businessLogic.ModelViews
 {
@@ -16,7 +17,7 @@ namespace businessLogic.ModelViews
         [Compare("Password",
             ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
-
+        public IFormFile? ProfileImage { get; set; }
         public string ?Address { get; set; }
         public int ?Age { get; set; }
     }

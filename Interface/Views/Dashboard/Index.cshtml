@@ -10,6 +10,7 @@
             <th>Role</th> <!-- Add a column for Role -->
             <th>Older Than 18</th>
             <th>Actions</th>
+            <th>image</th>
         </tr>
     </thead>
     <tbody>
@@ -37,7 +38,14 @@
                     </a>
 
                 </td>
+
+                <td>
+                            <p>url: @user.imageUrl</p>
+                    
+                    <img src="@user.imageUrl" width="100" />
+                </td>
             </tr>
+
         }
     </tbody>
 </table>

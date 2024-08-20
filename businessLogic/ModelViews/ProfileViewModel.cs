@@ -12,5 +12,6 @@
 
         public string Role { get; set; }
         public bool ?OldThan18 { get; set; }
+        public string ? imageUrl { get; set; }
     }
 }

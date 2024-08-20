@@ -2,16 +2,68 @@
 using businessLogic.ModelViews;
 using businessLogic.Services.Interfaces;
 using DataLayer.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+namespace businessLogic.Services.Services
+{
+    public class FileManager
+    {
+        private readonly string _rootPath;
 
+        public FileManager(string rootPath)
+        {
+            _rootPath = rootPath;
+        }
+
+        public async Task<string> SaveFileAsync(IFormFile file, string folderName)
+        {
+            if (file == null || file.Length == 0)
+                throw new ArgumentException("File cannot be null or empty.", nameof(file));
+
+            string uploadsFolder = Path.Combine(_rootPath, folderName);
+
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+
+            return Path.Combine(folderName, uniqueFileName).Replace("\\", "/");
+        }
+
+        public bool DeleteFile(string relativeFilePath)
+        {
+            if (string.IsNullOrEmpty(relativeFilePath))
+                throw new ArgumentException("File path cannot be null or empty.", nameof(relativeFilePath));
+
+            string filePath = Path.Combine(_rootPath, relativeFilePath);
+
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+                return true;
+            }
+
+            return false;
+        }
+    }
+}
 
 namespace businessLogic.Services.Services
 {
+
     public class AccountService : IAccountService
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -50,6 +102,13 @@ namespace businessLogic.Services.Services
         {
             var user = _mapper.Map<ApplicationUser>(model);
 
+            if (model.ProfileImage != null && model.ProfileImage.Length > 0)
+            {
+                FileManager _fileManager = new FileManager("wwwroot");
+                string relativeFilePath = await _fileManager.SaveFileAsync(model.ProfileImage, "images/profiles");
+                user.imageUrl = "/" + relativeFilePath;
+            }
+
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
@@ -59,6 +118,8 @@ namespace businessLogic.Services.Services
 
             return result;
         }
+
+
 
 
         public async Task SignInUserAsync(ApplicationUser user, bool isPersistent = false)

@@ -40,7 +40,6 @@ namespace Interface.Controllers
         [ActionName("Register")]
         public async Task<IActionResult> RegisterConfirmed(RegisterViewModel model)
         {
-            Console.WriteLine(model.Email);
             if (ModelState.IsValid)
             {
                 var result = await _accountService.RegisterUser(model);
@@ -63,6 +62,7 @@ namespace Interface.Controllers
             }
             return View(model);
         }
+
 
         [HttpGet]
         [AutoValidateAntiforgeryToken]

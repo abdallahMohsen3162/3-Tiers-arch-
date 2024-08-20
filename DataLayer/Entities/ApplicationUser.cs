@@ -10,9 +10,12 @@ namespace DataLayer.Entities
 {
     public class ApplicationUser : IdentityUser
     {
+
+        public string? imageUrl { get; set; }
         [MaxLength(20)]
         public string? Address { get; set; }
         [Range(0, 60)]
         public int? Age { get; set; }
+
     }
 }

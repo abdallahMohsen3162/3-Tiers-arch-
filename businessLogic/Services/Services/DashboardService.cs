@@ -2,15 +2,14 @@
 using businessLogic.ModelViews;
 using businessLogic.Services.Interfaces;
 using DataLayer.Entities;
-using DataLayer.Migrations;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
+using businessLogic.Services.Services;
 
 namespace businessLogic.Services.Services
 {
@@ -19,6 +18,7 @@ namespace businessLogic.Services.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
+        private readonly FileManager _fileManager;
 
         public ClaimsPrincipal User { get; private set; }
 
@@ -27,15 +27,16 @@ namespace businessLogic.Services.Services
             _userManager = userManager;
             _mapper = mapper;
             _roleManager = roleManager;
-
+            _fileManager = new FileManager("wwwroot");
         }
 
         public DashboardViewModel GetDashboardData()
         {
-
-
-
             var allUsers = _userManager.Users.ToArray();
+            foreach (var user in allUsers)
+            {
+                Console.WriteLine(user.Email);
+            }
             var profileViewModels = new List<ProfileViewModel>();
 
             foreach (var user in allUsers)
@@ -43,26 +44,16 @@ namespace businessLogic.Services.Services
                 var profileViewModel = _mapper.Map<ProfileViewModel>(user);
                 var roles = _userManager.GetRolesAsync(user).Result;
 
-                if (roles.Any())
-                {
-                    profileViewModel.Role = string.Join(", ", roles); 
-                }
-                else
-                {
-                    profileViewModel.Role = "No Role Assigned"; 
-                }
+                profileViewModel.Role = roles.Any() ? string.Join(", ", roles) : "No Role Assigned";
 
                 profileViewModels.Add(profileViewModel);
             }
 
-            DashboardViewModel model = new DashboardViewModel
+            return new DashboardViewModel
             {
                 Users = profileViewModels.ToArray(),
             };
-
-            return model;
         }
-
 
         public async Task<ApplicationUser> GetUserByIdAsync(string id)
         {
@@ -71,19 +62,22 @@ namespace businessLogic.Services.Services
 
         public async Task<IdentityResult> DeleteUserAsync(ApplicationUser user)
         {
+            if (!string.IsNullOrEmpty(user.imageUrl))
+            {
+                _fileManager.DeleteFile(user.imageUrl.TrimStart('/'));
+            }
+
             return await _userManager.DeleteAsync(user);
         }
 
         public EditViewModel GetEditViewModel(ApplicationUser user)
         {
-
-                
             return new EditViewModel
             {
                 Id = user.Id,
                 Email = user.Email,
                 Address = user.Address,
-                Age = user.Age != null ? (int)user.Age : 0,
+                Age = user.Age ?? 0,
             };
         }
 
@@ -92,14 +86,12 @@ namespace businessLogic.Services.Services
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
-
                 Console.WriteLine(id);
                 Console.WriteLine("User not found");
                 return new List<Claim>();
             }
             return (await _userManager.GetClaimsAsync(user)).ToList();
         }
-
 
         public async Task<IdentityResult> UpdateUserAsync(ApplicationUser user, string newPassword)
         {
@@ -119,6 +111,13 @@ namespace businessLogic.Services.Services
         public async Task<IdentityResult> CreateUserAsync(CreateUserViewModel model)
         {
             var user = _mapper.Map<ApplicationUser>(model);
+
+            if (model.ProfileImage != null && model.ProfileImage.Length > 0)
+            {
+                string relativeFilePath = await _fileManager.SaveFileAsync(model.ProfileImage, "images/profiles");
+                user.imageUrl = "/" + relativeFilePath;
+            }
+
             var createResult = await _userManager.CreateAsync(user, model.Password);
 
             if (createResult.Succeeded && !string.IsNullOrEmpty(model.RoleId))
@@ -151,7 +150,6 @@ namespace businessLogic.Services.Services
             return IdentityResult.Failed(new IdentityError { Description = "Role not found." });
         }
 
-
         public async Task<EditViewModel> GetEditViewModelAsync(ApplicationUser user)
         {
             var roles = await _userManager.GetRolesAsync(user);
@@ -168,7 +166,7 @@ namespace businessLogic.Services.Services
                 Id = user.Id,
                 Email = user.Email,
                 Address = user.Address,
-                Age = user.Age != null ? (int)user.Age : 0,
+                Age = user.Age ?? 0,
                 RoleId = roleId
             };
         }
@@ -190,17 +188,12 @@ namespace businessLogic.Services.Services
 
             var currentClaims = await GetUserClaimsAsync(userId);
 
-            // Remove existing claims
             var removeResult = await _userManager.RemoveClaimsAsync(user, currentClaims);
             if (!removeResult.Succeeded) return false;
 
-
-            
             var selectedClaims = claims.Where(c => c.IsSelected).Select(c => new Claim(c.ClaimType, c.ClaimType));
             var addResult = await _userManager.AddClaimsAsync(user, selectedClaims);
             return addResult.Succeeded;
         }
-
-
     }
 }

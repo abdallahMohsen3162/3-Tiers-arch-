@@ -3,6 +3,7 @@
 using System.ComponentModel.DataAnnotations;
 using DataLayer.Entities;
 using businessLogic.ModelViews;
+using Microsoft.AspNetCore.Http;
 
 namespace businessLogic.ModelViews
 {
@@ -29,7 +30,7 @@ namespace businessLogic.ModelViews
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
-
+        public IFormFile? ProfileImage { get; set; }
         [Required]
         public string RoleId { get; set; } 
     }
@@ -55,5 +56,7 @@ namespace businessLogic.ModelViews
 
         [Required]
         public string RoleId { get; set; }
+
+        public IFormFile? ProfileImage { get; set; }
     }
 }
