@@ -1,0 +1,30 @@
+.error-container {
+    text-align: center;
+    margin-top: 10%;
+}
+
+.error-icon {
+    font-size: 100px;
+    color: #d9534f;
+}
+
+.error-title {
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.error-description {
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+.error-code {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.error-circle {
+    font-size: 100px;
+    color: red;
+}

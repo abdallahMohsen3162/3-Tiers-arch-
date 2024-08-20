@@ -63,6 +63,7 @@ namespace Interface.Controllers
         [Authorize(Policy = AuthenticationConstants.Identity.Edit)]
         public async Task<IActionResult> Edit(string id)
         {
+            Console.WriteLine("DDDDDDDDDDDDDDDD");
             if (id == null )
             {
                 return NotFound();
@@ -83,6 +84,7 @@ namespace Interface.Controllers
 
         [Authorize(Policy = AuthenticationConstants.Identity.Edit)]
         [ValidateAntiForgeryToken]
+        [HttpPost, ActionName("EditConfirmed")]
         [Authorize]
         public async Task<IActionResult> Edit(string id, EditViewModel model)
         {

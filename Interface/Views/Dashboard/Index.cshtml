@@ -25,7 +25,7 @@
                 <td>
                     @if(@user.Role != "Admin"){
 
-                        <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-primary">Edit</a>
+                        <a asp-controller="Dashboard" asp-action="Edit" asp-route-id="@user.Id" class="btn btn-primary">Edit</a>
                         <form method="post" action="@Url.Action("DeleteConfirmed", new { id = user.Id })" style="display:inline;">
                             @Html.AntiForgeryToken()
                             <button type="submit" onclick="return confirm('Are you sure?')" class="btn btn-danger">Delete</button>
